@@ -38,9 +38,9 @@ public class Erythrina {
         Logger javalinLogger = (Logger) LoggerFactory.getLogger("io.javalin");
         Logger jettyLogger = (Logger) LoggerFactory.getLogger("org.eclipse.jetty");
 
-        mongoLogger.setLevel(Level.OFF);
+        /*mongoLogger.setLevel(Level.OFF);
         javalinLogger.setLevel(Level.OFF);
-        jettyLogger.setLevel(Level.OFF);
+        jettyLogger.setLevel(Level.OFF);*/
     }
 
     public static void main(String[] args) {
@@ -72,17 +72,17 @@ public class Erythrina {
     }
 
     private static void init(){
-        File lowFile = new File(Erythrina.getConfig().getImageFile().getImageFileDir().getLow());
-        File middleFile = new File(Erythrina.getConfig().getImageFile().getImageFileDir().getMiddle());
-        File highFile = new File(Erythrina.getConfig().getImageFile().getImageFileDir().getHigh());
+        File lowFile = new File(Erythrina.getConfig().getImageFile().getDirectory().getLow());
+        File mediumFile = new File(Erythrina.getConfig().getImageFile().getDirectory().getMedium());
+        File highFile = new File(Erythrina.getConfig().getImageFile().getDirectory().getHigh());
 
         if (!lowFile.exists()){
             lowFile.mkdirs();
         }
-        if (!middleFile.exists()){
-            middleFile.mkdirs();
+        if (!mediumFile.exists()){
+            mediumFile.mkdirs();
         }
-        if (!highFile.exists()){
+        if (!highFile.exists()) {
             highFile.mkdirs();
         }
     }
