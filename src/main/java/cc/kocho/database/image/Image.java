@@ -1,5 +1,6 @@
 package cc.kocho.database.image;
 
+import cc.kocho.data.http.UploadData;
 import cc.kocho.data.image.Resolution;
 import cc.kocho.data.image.Tag;
 import dev.morphia.annotations.Entity;
@@ -16,27 +17,29 @@ public class Image {
     private ObjectId id;
     @Indexed
     private final String indexed = ObjectId.get().toString();
-    private List<Tag> tag = new ArrayList<>();
+    private UploadData uploadData = new UploadData();
     private Resolution resolution = new Resolution();
-    //SIZE byte
     private long size = 0;
+    private String md5 = "";
+    private final long uploadTime = System.currentTimeMillis();
 
     public Image() {
 
     }
 
-    public Image(List<Tag> tag, Resolution resolution, long size){
-        this.tag = tag;
+    public Image(UploadData uploadData, Resolution resolution, long size, String md5){
+        this.uploadData = uploadData;
         this.resolution = resolution;
         this.size = size;
+        this.md5 = md5;
     }
 
     public String getIndexed() {
         return indexed;
     }
 
-    public List<Tag> getTag() {
-        return tag;
+    public UploadData getUploadData() {
+        return uploadData;
     }
 
     public Resolution getResolution() {
@@ -45,5 +48,13 @@ public class Image {
 
     public long getSize() {
         return size;
+    }
+
+    public String getMd5() {
+        return md5;
+    }
+
+    public long getUploadTime() {
+        return uploadTime;
     }
 }

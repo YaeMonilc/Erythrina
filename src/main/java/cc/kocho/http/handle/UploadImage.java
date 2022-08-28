@@ -2,61 +2,51 @@ package cc.kocho.http.handle;
 
 import cc.kocho.Erythrina;
 import cc.kocho.data.http.Result;
-import cc.kocho.data.http.Tags;
-import cc.kocho.data.image.Resolution;
-import cc.kocho.data.image.Tag;
+import cc.kocho.data.http.UploadData;
 import cc.kocho.database.image.Image;
 import cc.kocho.http.Http;
+import cc.kocho.utils.DatabaseUtils;
 import cc.kocho.utils.JsonUtils;
-import cn.hutool.core.img.Img;
+import cn.hutool.crypto.digest.MD5;
+import dev.morphia.query.experimental.filters.Filters;
 import io.javalin.Javalin;
 import io.javalin.http.UploadedFile;
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.ByteArrayInputStream;
 
 public class UploadImage implements Http {
     @Override
     public void handle(Javalin server) {
         server.post("/image/upload/", ctx -> {
             UploadedFile imageFile = ctx.uploadedFile("image");
+            String data = ctx.formParam("uploadData");
+
             if (imageFile == null || imageFile.getSize() < 1){
                 ctx.result(Erythrina.getGson().toJson(new Result(301, "IMAGE NOT FOUND")));
                 return;
             }
 
-            ctx.result(Erythrina.getGson().toJson(new Result(200, "SUCCESS")));
+            byte[] imageFileContent = imageFile.getContent().readAllBytes();
 
-            String tag = ctx.formParam("tag");
-            Tags tags;
-            List<Tag> tagList = new ArrayList<>();
-            if (!(tag == null || tag.equals(""))){
-                if (JsonUtils.check(tag)){
-                    tags = Erythrina.getGson().fromJson(tag, Tags.class);
-                    tagList = tags.getTags();
+            String md5 = new MD5().digestHex16(imageFileContent);
+            if (Erythrina.getDatastore().find(Image.class).filter(Filters.eq("md5", md5)).stream().count() > 0){
+                ctx.result(Erythrina.getGson().toJson(new Result(302, "IMAGE EXISTS")));
+                return;
+            }
+
+            Erythrina.getLogger().info("IP {} upload image. MD5: {}", ctx.ip(), md5);
+
+            UploadData uploadData = new UploadData();
+            if (!(data == null || data.equals(""))){
+                if (JsonUtils.check(data)){
+                    uploadData = Erythrina.getGson().fromJson(data, UploadData.class);
                 }
             }
 
-            BufferedImage bufferedImage = ImageIO.read(imageFile.getContent());
+            DatabaseUtils.uploadImage(ImageIO.read(new ByteArrayInputStream(imageFileContent)), uploadData, imageFile.getSize(), md5);
 
-            Img imgLow = new Img(bufferedImage);
-            Img imgMiddle = new Img(bufferedImage);
-            Img imgHigh = new Img(bufferedImage);
-
-            Image image = new Image(tagList, new Resolution(bufferedImage.getWidth(), bufferedImage.getHeight()), imageFile.getSize());
-
-            imgLow.scale(Erythrina.getConfig().getImageFile().getGetImageFileQuality().getLow());
-            imgMiddle.scale(Erythrina.getConfig().getImageFile().getGetImageFileQuality().getMiddle());
-            imgHigh.scale(Erythrina.getConfig().getImageFile().getGetImageFileQuality().getHigh());
-
-            imgLow.write(new File(Erythrina.getConfig().getImageFile().getImageFileDir().getLow() + image.getIndexed() + "." + Erythrina.getConfig().getImageFile().getFormat()));
-            imgMiddle.write(new File(Erythrina.getConfig().getImageFile().getImageFileDir().getMiddle() + image.getIndexed() + "." + Erythrina.getConfig().getImageFile().getFormat()));
-            imgHigh.write(new File(Erythrina.getConfig().getImageFile().getImageFileDir().getHigh() + image.getIndexed() + "." + Erythrina.getConfig().getImageFile().getFormat()));
-
-            Erythrina.getDatastore().save(image);
+            ctx.result(Erythrina.getGson().toJson(new Result(200, "SUCCESS")));
         });
     }
 }

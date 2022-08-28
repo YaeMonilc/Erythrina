@@ -10,11 +10,11 @@ import java.util.List;
 public class GetImageRandom implements Http {
     @Override
     public void handle(Javalin server) {
-        server.get("/image/{quality}/{methods}/", ctx -> {
+        server.get("/image/random/{quality}/{methods}", ctx -> {
             List<Image> imageList = Erythrina.getDatastore().find(Image.class).stream().toList();
             int randomNumber = (int) (Math.random() * imageList.size());
             String indexed = imageList.get(randomNumber).getIndexed();
-            ctx.redirect(indexed);
+            ctx.redirect(String.format("/image/get/%s/%s/%s", ctx.pathParam("quality"), ctx.pathParam("methods"), indexed));
         });
     }
 }
