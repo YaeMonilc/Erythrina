@@ -20,21 +20,21 @@ public class Config {
     }
 
     public class ImageFile{
-        private ImageFileDir imageFileDir = new ImageFileDir();
-        private ImageFileQuality getImageFileQuality = new ImageFileQuality();
+        private Directory directory = new Directory();
+        private Quality quality = new Quality();
         private String format = "jpg";
 
-        public class ImageFileDir{
+        public class Directory{
             private String low = "./images/low/";
-            private String middle = "./images/middle/";
+            private String medium = "./images/middle/";
             private String high = "./images/high/";
 
             public String getLow() {
                 return low;
             }
 
-            public String getMiddle() {
-                return middle;
+            public String getMedium() {
+                return medium;
             }
 
             public String getHigh() {
@@ -42,17 +42,17 @@ public class Config {
             }
         }
 
-        public class ImageFileQuality{
+        public class Quality{
             private float low = 0.35F;
-            private float middle = 0.65F;
+            private float medium = 0.65F;
             private float high = 1F;
 
             public float getLow() {
                 return low;
             }
 
-            public float getMiddle() {
-                return middle;
+            public float getMedium() {
+                return medium;
             }
 
             public float getHigh() {
@@ -60,12 +60,12 @@ public class Config {
             }
         }
 
-        public ImageFileDir getImageFileDir() {
-            return imageFileDir;
+        public Directory getDirectory() {
+            return directory;
         }
 
-        public ImageFileQuality getGetImageFileQuality() {
-            return getImageFileQuality;
+        public Quality getQuality() {
+            return quality;
         }
 
         public String getFormat() {
