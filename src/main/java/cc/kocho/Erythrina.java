@@ -76,6 +76,8 @@ public class Erythrina {
         File mediumFile = new File(Erythrina.getConfig().getImageFile().getDirectory().getMedium());
         File highFile = new File(Erythrina.getConfig().getImageFile().getDirectory().getHigh());
 
+        File file = new File(Erythrina.getConfig().getFile().getPath());
+
         if (!lowFile.exists()){
             lowFile.mkdirs();
         }
@@ -84,6 +86,10 @@ public class Erythrina {
         }
         if (!highFile.exists()) {
             highFile.mkdirs();
+        }
+
+        if (!file.exists()) {
+            file.mkdirs();
         }
     }
 

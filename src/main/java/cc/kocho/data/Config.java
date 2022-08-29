@@ -5,6 +5,7 @@ public class Config {
     private int port = 1800;
     private Database database = new Database();
     private ImageFile imageFile = new ImageFile();
+    private File file = new File();
 
     public class Database{
         private String name = "Erythrina";
@@ -73,6 +74,14 @@ public class Config {
         }
     }
 
+    public class File{
+        private String path = "./file/";
+
+        public String getPath() {
+            return path;
+        }
+    }
+
     public String getHost() {
         return host;
     }
@@ -87,5 +96,9 @@ public class Config {
 
     public ImageFile getImageFile() {
         return imageFile;
+    }
+
+    public File getFile() {
+        return file;
     }
 }
